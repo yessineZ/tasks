@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learn JavaScript</title>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .container {
+        width: 500px;
+        margin: 20px auto;
+      }
+      .form {
+        background-color: #eee;
+        border-radius: 6px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+      }
+      .input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        flex: 1;
+      }
+      .input:focus {
+        outline: none;
+      }
+      .add {
+        border: none;
+        background-color: #f44336;
+        color: white;
+        padding: 10px;
+        border-radius: 6px;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+      .tasks {
+        background-color: #eee;
+        margin-top: 20px;
+        border-radius: 6px;
+        padding: 20px;
+      }
+      .tasks .task {
+        background-color: white;
+        padding: 10px;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.3s;
+        cursor: pointer;
+        border: 1px solid #ccc;
+      }
+      .tasks .task:not(:last-child) {
+        margin-bottom: 15px;
+      }
+      .tasks .task:hover {
+        background-color: #f7f7f7;
+      }
+      .tasks .task.done {
+        opacity: 0.8;
+        background-color: green;
+      }
+      .tasks .task span {
+        font-weight: bold;
+        font-size: 10px;
+        background-color: red;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="form">
+        <input type="text" class="input" />
+        <input type="submit" class="add" value="Add Task" />
+      </div>
+      <div class="tasks"></div>
+    </div>
+  </body>
+<script>
+    let input = document.querySelector(".input") ; 
+    let submit = document.querySelector(".add") ; 
+    let tasksdiv = document.querySelector(".tasks") ; 
+
+    let arrayoftasks= [] ; 
+    
+    if(localStorage.getItem("tasks")) {
+        arrayoftasks = JSON.parse(localStorage.getItem("tasks")) ; 
+    }
+
+    getdatafromlocalstorage() ;  
+
+
+    tasksdiv.addEventListener("click",function(e) {
+        if(e.target.classList.contains("del")) {
+            deletetask(e.target.parentElement.getAttribute("data-id")) ; 
+            e.target.parentElement.remove() ; 
+        }
+
+        if(e.target.classList.contains("task")) {
+            togglestatus(e.target.getAttribute("data-id") ) ; 
+            e.target.classList.toggle("done") ; 
+            console.log(e.target.classList) ; 
+        } 
+    });
+    
+    submit.onclick = function() {
+        if(input.value!== "") {
+            addtasktoarray(input.value) ;
+            input.value = "" ; 
+        }
+    }
+
+
+
+    function addtasktoarray(text) {
+        const task = {
+            id : Date.now() ,
+            title : text ,
+            complete : false ,
+        };
+
+        arrayoftasks.push(task) ; 
+
+        addelementstopage(arrayoftasks) ; 
+
+        adddatatolocalstorage(arrayoftasks) ; 
+
+    }
+
+    function addelementstopage(arrayoftasks) {
+        tasksdiv.innerHTML = "" ;
+        
+        arrayoftasks.forEach( (task) => {
+            let div = document.createElement("div") ; 
+            div.className= "task" ; 
+
+            if(task.complete) {
+                task.className = "task done" ; 
+
+            }
+
+            div.setAttribute("data-id",task.id) ; 
+
+            div.appendChild(document.createTextNode(task.title)) ; 
+
+            let span = document.createElement("span") ; 
+
+            span.className = "del" ; 
+
+            span.appendChild(document.createTextNode("delete")) ; 
+
+            div.appendChild(span) ; 
+
+            tasksdiv.appendChild(div) ; 
+             
+        });}
+
+        function adddatatolocalstorage(arrayoftasks) {
+            window.localStorage.setItem("tasks",JSON.stringify(arrayoftasks)) ; 
+        }
+
+
+        function getdatafromlocalstorage() {
+            let data = window.localStorage.getItem("tasks") ; 
+            if(data) {
+                let tasks = JSON.parse(data) ; 
+                addelementstopage(tasks) ; 
+            }
+        }
+
+
+        function deletetask(taskid) {
+            arrayoftasks = arrayoftasks.filter((task) => {
+                task.id != taskid ; 
+            
+            });
+
+            adddatatolocalstorage(arrayoftasks) ; 
+
+        }
+
+
+        function togglestatus(taskid) {
+            for(let i =0 ;i<arrayoftasks.length;i++) {
+                if(arrayoftasks.id = taskid) {
+                    arrayoftasks.complete === false ? arrayoftasks.complete = true : arrayoftasks.complete = false ; 
+                }
+
+            }
+            adddatatolocalstorage(arrayoftasks)  ;
+        }
+
+
+            
+
+    
+</script>
+
+</html>
